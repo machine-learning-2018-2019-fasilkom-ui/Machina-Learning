@@ -9,7 +9,7 @@ def fair_train_test_split(X, y, test_size=0.5):
     y_tests = []
 
     for cls in classes:
-        X_train, X_test, y_train, y_test = train_test_split(X[y == cls], y[y == cls], test_size=test_size)
+        X_train, X_test, y_train, y_test = train_test_split(X[y == cls], y[y == cls], test_size=test_size, random_state=1200)
         X_trains.append(X_train)
         X_tests.append(X_test)
         y_trains.append(y_train)

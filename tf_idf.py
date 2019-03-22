@@ -60,7 +60,7 @@ class TF_IDF:
                         self.dict_non_iklan[word] = {}
                         self.dict_non_iklan[word][doc_number] = 1
 
-    def get_tf_idf_score(self):
+    def get_tf_idf_scores(self):
         scores = {}
         for key, value in self.all_words.items():
             frequency_iklan = 0
