@@ -22,7 +22,7 @@ class MNB_TextClassifier:
         if not type(y) == np.ndarray:
             y = np.array(y)
         if not X.shape[0] == y.shape[0]:
-            raise Exception
+            raise Exception('number of rows in X isn\'t match with number of rows in y')
 
         self.prior = {}
         self.condprob = {}
