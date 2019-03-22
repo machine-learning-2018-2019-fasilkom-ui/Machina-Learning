@@ -10,7 +10,12 @@ if __name__ == '__main__':
     y = df['label']
     X_train, X_test, y_train, y_test = fair_train_test_split(X, y, test_size=0.1)
 
-    clf = MNB_TextClassifier()
-    clf.fit(X_train, y_train, tfidf=True)
-    y_pred = clf.predict(X_test)
-    print(accuracy_score(y_pred, y_test))
+    clf_without_tf_idf = MNB_TextClassifier()
+    clf_without_tf_idf.fit(X_train, y_train, tfidf=False)
+    y_pred = clf_without_tf_idf.predict(X_test)
+    print('Accuracy of MNB_TextClassifier without TF-IDF : ', accuracy_score(y_pred, y_test))
+    
+    clf_with_tf_idf = MNB_TextClassifier()
+    clf_with_tf_idf.fit(X_train, y_train, tfidf=True)
+    y_pred = clf_with_tf_idf.predict(X_test)
+    print('Accuracy of MNB_TextClassifier with TF-IDF : ', accuracy_score(y_pred, y_test))
