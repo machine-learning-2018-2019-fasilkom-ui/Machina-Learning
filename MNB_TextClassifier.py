@@ -4,9 +4,6 @@ from tf_idf import TF_IDF
 class MNB_TextClassifier:
     def __init__(self):
         pass
-
-    def __scoring(self, X, y):
-        pass
     
     def proba_y_given_x(self, y, x):
         proba = self.proba_y(y)
@@ -47,31 +44,55 @@ class MNB_TextClassifier:
             tf_idf.compute_freq()
             self.scores = tf_idf.get_tf_idf_scores()
 
+            denominator_smooth = sum([self.scores[term][cls] for term in self.terms for cls in self.classes])
+            word_scores_sum = {}
+            for cls in self.classes:
+                word_scores_sum[cls] = sum([self.scores[term][cls] for term in self.terms])
+            
             # Compute conditional probability (self.condprob)
             for term in self.terms:
                 if not term in self.condprob:
                     self.condprob[term] = {}
+
                 for cls in self.classes:                    
                     nominator = self.scores[term][cls] + 1
-                    denominator = sum([self.scores[term][cls] for term in self.terms]) + sum([self.scores[term][cls] for term in self.terms for cls in self.classes])
+                    denominator = word_scores_sum[cls] + len(self.terms)
                     self.condprob[term][cls] = nominator / denominator
             # Unknown term
             self.condprob[''] = {}
             for cls in self.classes:
-                self.condprob[''][cls] = 1 / sum([self.scores[term][cls] for term in self.terms]) + sum([self.scores[term][cls] for term in self.terms for cls in self.classes])
+                self.condprob[''][cls] = 1 / (word_scores_sum[cls] + len(self.terms))
         else:
+            # Word count dictionary
+            word_sum = {}
+            for i in range(m):
+                for j in range(len(X[i])):
+                    if not X[i][j] in word_sum:
+                        word_sum[X[i][j]] = {}
+                    if not y[i] in word_sum[X[i][j]]:
+                        word_sum[X[i][j]][y[i]] = 0 
+                    if not 1 - y[i] in word_sum[X[i][j]]:
+                        word_sum[X[i][j]][1 - y[i]] = 0 
+                    word_sum[X[i][j]][y[i]] += 1
+
+            words_count_in_cls = {}
+            for i in range(m):
+                if not y[i] in words_count_in_cls:
+                    words_count_in_cls[y[i]] = 0
+                words_count_in_cls[y[i]] += len(X[i])
+
             # Compute conditional probability (self.condprob)
             for term in self.terms:
                 if not term in self.condprob:
                     self.condprob[term] = {}
                 for cls in self.classes:
-                    nominator = sum([1 if X[i][j] == term and y[i] == cls else 0 for i in range(m) for j in range(len(X[i]))]) + 1
-                    denominator = sum([len(X[i]) if y[i] == cls else 0 for i in range(m)]) + len(self.terms)
+                    nominator = word_sum[term][cls] + 1
+                    denominator = words_count_in_cls[cls] + len(self.terms)
                     self.condprob[term][cls] = nominator / denominator
             # Unknown term
             self.condprob[''] = {}
             for cls in self.classes:
-                self.condprob[''][cls] = 1 / (sum([len(X[i]) if y[i] == cls else 0 for i in range(m)]) + len(self.terms))
+                self.condprob[''][cls] = 1 / (words_count_in_cls[cls] + len(self.terms))
 
     def predict_single(self, x):
         return 1 if self.proba_y_given_x(1, x) > self.proba_y_given_x(0, x) else 0

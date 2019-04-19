@@ -14,7 +14,6 @@ class TF_IDF:
         self.all_non_iklan = {}
 
         self.all_words = {}
-        pass
 
     def set_train_and_label(self, sms, label):
         self.sms = sms
@@ -89,10 +88,10 @@ class TF_IDF:
             scores[key][1] = 0
 
             if df_iklan != 0:
-                scores[key][1] = frequency_iklan * math.log2(self.n_iklan / df_iklan)
+                scores[key][1] = frequency_iklan * math.log(self.n_iklan / df_iklan)
 
             if df_non_iklan != 0:
-                scores[key][0] = frequency_non_iklan * math.log2(self.n_non_iklan / df_non_iklan)
+                scores[key][0] = frequency_non_iklan * math.log(self.n_non_iklan / df_non_iklan)
         
         return scores
             
